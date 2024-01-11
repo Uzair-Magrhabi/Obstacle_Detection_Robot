@@ -1,0 +1,166 @@
+#include<Servo.h>
+
+int UltraSound();
+
+int enA = 5;
+int in1 = 9;
+int in2 = 10;
+int check;
+int enB = 4;
+int in3 = 3;
+int in4 = 2;
+
+float left, right, right_us, left_us;
+int servoPin = 8;
+int trigPin = 7;    
+int echoPin = 6;
+
+Servo servo;
+
+int angle = 0;
+
+float duration_us, distance_cm;
+
+void setup() {
+
+  pinMode(enA, OUTPUT);
+  pinMode(enB, OUTPUT);
+  pinMode(in1, OUTPUT);
+  pinMode(in2, OUTPUT);
+  pinMode(in3, OUTPUT);
+  pinMode(in4, OUTPUT);
+
+  servo.attach(servoPin);
+  Serial.begin (9600);
+
+  // configure the trigger pin to output mode
+  pinMode(trigPin, OUTPUT);
+  // configure the echo pin to input mode
+  pinMode(echoPin, INPUT);
+
+
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, LOW);
+  analogWrite(enA, 256);
+  analogWrite(enB, 256);
+
+}
+
+void loop() {
+
+  servo.write(90);
+
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+
+
+
+  digitalWrite(trigPin, HIGH);
+
+  digitalWrite(trigPin, LOW);
+
+
+  duration_us = pulseIn(echoPin, HIGH);
+
+
+  distance_cm = 0.017 * duration_us;
+
+
+
+if (distance_cm <= 20 ){
+
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, HIGH);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, HIGH);
+
+
+  check = UltraSound();
+
+  if (check == 1){
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);             //right
+  digitalWrite(in3, LOW);  
+  digitalWrite(in4, HIGH);
+
+  delayMicroseconds(70);
+
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, HIGH);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, HIGH);
+  }
+
+  else {
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);             //left
+  digitalWrite(in3, HIGH);  
+  digitalWrite(in4, LOW);
+
+  delayMicroseconds(70);
+
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, HIGH);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, HIGH);
+
+  }
+
+}
+
+
+
+
+}
+
+
+
+int UltraSound() {
+
+
+  int left; right, right_us, left_us;
+
+  
+
+  servo.write(180);
+
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+
+  right_us = pulseIn(echoPin, HIGH);
+
+
+  right = 0.017 * duration_us;
+
+  servo.write(0);
+
+   digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+
+  left_us = pulseIn(echoPin, HIGH);
+
+  left = 0.017 * duration_us;
+
+
+  if (right >= left) {
+
+    return 1;
+  }
+
+  else {
+    return 0;
+  }
+
+
+
+
+}
+
